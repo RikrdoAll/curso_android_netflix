@@ -25,20 +25,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         List<Category> categories = new ArrayList<>();
-        categories.add(new Category("Aventura"));
-        categories.add(new Category("Ação"));
-        categories.add(new Category("Comedia"));
-        categories.add(new Category("Romance"));
-        categories.add(new Category("Terror"));
-        categories.add(new Category("Documentario"));
-        categories.add(new Category("Teste 1 XYZ"));
-        categories.add(new Category("Teste 2 ABC"));
-        categories.add(new Category("Teste 3 EFG"));
-        categories.add(new Category("Teste 4 HIJ"));
+        categories.add(new Category("Teste 1"));
+        categories.add(new Category("Teste 2"));
+        categories.add(new Category("Teste 3"));
+        categories.add(new Category("Teste 4"));
+        categories.add(new Category("Teste 5"));
+        categories.add(new Category("Teste 6"));
+        categories.add(new Category("Teste 7"));
 
         for (Category category : categories) {
 
-             category.setMovies(new ArrayList<>());
+            category.setMovies(new ArrayList<>());
             for (int i = 0; i < 20; i++) {
                 Movie movie = new Movie();
 
@@ -95,13 +92,9 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull MainActivity.CategoryHolder holder, int position) {
             Category category = categories.get(position);
             holder.textViewTitle.setText(category.getName());
-
             MovieAdapater movieAdapater = new MovieAdapater(category.getMovies());
-//            holder.recyclerViewMovie = findViewById(R.id.recycler_view);
             holder.recyclerViewMovie.setAdapter(new MovieAdapater(category.getMovies()));
-
             holder.recyclerViewMovie.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.HORIZONTAL, false));
-
         }
 
         @Override
@@ -127,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MainActivity.MovieHolder holder, int position) {
             Movie movie = movies.get(position);
-            holder.imageView.setImageResource(movie.getCoverUrl());
+//            holder.imageView.setImageResource(movie.getCoverUrl());
         }
 
         @Override
