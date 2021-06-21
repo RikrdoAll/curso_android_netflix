@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,11 @@ import java.util.List;
 
 import br.com.naotemigual.netflixremake.model.Category;
 import br.com.naotemigual.netflixremake.model.Movie;
+import br.com.naotemigual.netflixremake.util.CategoryAsyncTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CategoryAsyncTask.CategorLoader {
+
+    MainAdapter mainAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,34 +29,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         List<Category> categories = new ArrayList<>();
-        categories.add(new Category("Teste 1"));
-        categories.add(new Category("Teste 2"));
-        categories.add(new Category("Teste 3"));
-        categories.add(new Category("Teste 4"));
-        categories.add(new Category("Teste 5"));
-        categories.add(new Category("Teste 6"));
-        categories.add(new Category("Teste 7"));
 
-        for (Category category : categories) {
-
-            category.setMovies(new ArrayList<>());
-            for (int i = 0; i < 20; i++) {
-                Movie movie = new Movie();
-
-                if (i%2 == 0)
-                    movie.setCoverUrl(R.drawable.movie);
-                else
-                    movie.setCoverUrl(R.drawable.movie_4);
-
-                category.getMovies().add(movie);
-            }
-        }
-
-        MainAdapter mainAdapter = new MainAdapter(categories);
+        mainAdapter = new MainAdapter(categories);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         recyclerView.setAdapter(mainAdapter);
+
+        CategoryAsyncTask categoryAsyncTask = new CategoryAsyncTask(this);
+        categoryAsyncTask.setCategorLoader(this);
+        categoryAsyncTask.execute("https://tiagoaguiar.co/api/netflix/home");
     }
+
+    @Override
+    public void onResult(List<Category> categories) {
+        mainAdapter.setCategories(categories);
+        mainAdapter.notifyDataSetChanged();
+
+    }
+
 
     private class MovieHolder extends RecyclerView.ViewHolder {
         final ImageView imageView;
@@ -76,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class MainAdapter extends RecyclerView.Adapter<CategoryHolder> {
 
-        private final List<Category> categories;
+        private List<Category> categories;
 
         public MainAdapter(List<Category> categories) {
             this.categories = categories;
@@ -89,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MainActivity.CategoryHolder holder, int position) {
+        public void onBindViewHolder(@NonNull CategoryHolder holder, int position) {
             Category category = categories.get(position);
             holder.textViewTitle.setText(category.getName());
             MovieAdapater movieAdapater = new MovieAdapater(category.getMovies());
@@ -100,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return categories.size();
+        }
+
+        public void setCategories(List<Category> categories) {
+            this.categories.clear();
+            this.categories.addAll(categories);
         }
     }
 

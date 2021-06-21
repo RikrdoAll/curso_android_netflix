@@ -1,11 +1,15 @@
 package br.com.naotemigual.netflixremake.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Category {
 
     private String name;
     private List<Movie> movies;
+
+    public Category() {
+    }
 
     public Category(String name) {
         this.name = name;
@@ -21,6 +25,9 @@ public class Category {
     }
 
     public List<Movie> getMovies() {
+        if(movies == null)
+            movies = new ArrayList<>();
+
         return movies;
     }
 
