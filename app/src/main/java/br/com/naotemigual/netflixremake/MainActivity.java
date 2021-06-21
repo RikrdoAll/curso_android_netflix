@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,8 +52,15 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
     private class MovieHolder extends RecyclerView.ViewHolder {
         final ImageView imageViewCover;
 
-        public MovieHolder(@NonNull View itemView) {
+        public MovieHolder(@NonNull View itemView, final OnItemClickListner onItemClickListner) {
             super(itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListner.onClick(getAdapterPosition());
+                }
+            });
             imageViewCover = itemView.findViewById(R.id.image_view_cover);
         }
     }
@@ -100,9 +108,10 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
             this.categories.clear();
             this.categories.addAll(categories);
         }
+
     }
 
-    private class MovieAdapater extends RecyclerView.Adapter<MovieHolder> {
+    private class MovieAdapater extends RecyclerView.Adapter<MovieHolder>  implements OnItemClickListner{
 
         private final List<Movie> movies;
 
@@ -110,10 +119,19 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
             this.movies = movies;
         }
 
+        @Override
+        public void onClick(int position) {
+            Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+            intent.putExtra("id", movies.get(position).getId());
+            startActivity(intent);
+        }
+
         @NonNull
         @Override
         public MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new MovieHolder(getLayoutInflater().inflate(R.layout.movie_item, parent, false));
+            View view = getLayoutInflater().inflate(R.layout.movie_item, parent, false);
+            MovieHolder movieHolder = new MovieHolder(view, this);
+            return movieHolder;
         }
 
         @Override
@@ -128,4 +146,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
         }
     }
 
+    interface OnItemClickListner {
+        void onClick(int position);
+    }
 }

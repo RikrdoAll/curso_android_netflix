@@ -1,12 +1,17 @@
 package br.com.naotemigual.netflixremake;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,25 +24,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.naotemigual.netflixremake.model.Movie;
+import br.com.naotemigual.netflixremake.model.MovieDetail;
+import br.com.naotemigual.netflixremake.util.MovieDetailAsyncTask;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements MovieDetailAsyncTask.MovieDetailLoader{
 
     private TextView txtTitle;
     private TextView txtDesc;
     private TextView txtCast;
     private RecyclerView recyclerView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
 
-
         txtTitle = findViewById(R.id.text_view_title);
         txtDesc = findViewById(R.id.text_view_desc);
         txtCast = findViewById(R.id.text_view_cast);
+        imageView = findViewById(R.id.image_view_cover); 
         recyclerView = findViewById(R.id.recycler_view_similar);
-
 
         Toolbar toobar = findViewById(R.id.toolbar);
         setSupportActionBar(toobar);
@@ -49,7 +56,6 @@ public class MovieActivity extends AppCompatActivity {
         }
 
         LayerDrawable drawable = (LayerDrawable) ContextCompat.getDrawable(this, R.drawable.shadows);
-
 
 //        troca foto
         if(drawable != null) {
@@ -68,12 +74,45 @@ public class MovieActivity extends AppCompatActivity {
 
             Movie movie = new Movie();
             movies.add(movie);
-
         }
 
         MovieAdapater movieAdapater = new MovieAdapater(movies);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerView.setAdapter(movieAdapater);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            int id = extras.getInt("id");
+
+            Log.i("Teste", "Posição do filme selecionado: " + id);
+            if (id > 3) {
+                Toast.makeText(this, "Filme indisponível "+ id, Toast.LENGTH_LONG).show();
+//                Dialog dialog = new Dialog(this.getBaseContext());
+//                dialog.setTitle("filme não disponível");
+//                dialog.show();
+                return;
+            }
+
+
+            MovieDetailAsyncTask movieDetailAsyncTask = new MovieDetailAsyncTask(this);
+            movieDetailAsyncTask.setMovieDetailLoader(this);
+            movieDetailAsyncTask.execute("https://tiagoaguiar.co/api/netflix/" + id);
+        }
+    }
+
+    @Override
+    public void onResult(MovieDetail movieDetail) {
+
+        txtTitle.setText(movieDetail.getMovie().getTitle());
+        txtDesc.setText(movieDetail.getMovie().getDesc());
+        txtCast.setText(movieDetail.getMovie().getCast());
+
+//        movieDetail.getMovie().getCoverUrl();
+
+
+
+//        recyclerView = findViewById(R.id.recycler_view_similar);
+
 
 
     }
