@@ -3,8 +3,13 @@ package br.com.naotemigual.netflixremake.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +18,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import br.com.naotemigual.netflixremake.R;
+
 /***
  * 20/06/2021 
  *
@@ -20,11 +27,15 @@ import java.net.URL;
  ***/
 public class ImageDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
-
     private final WeakReference<ImageView> imageViewWeakReference;
+    private boolean shadowEnabled;
 
     public ImageDownloadAsyncTask(ImageView imageViewCover) {
         this.imageViewWeakReference = new WeakReference<>(imageViewCover);
+    }
+
+    public void setShadowEnabled(boolean shadowEnabled) {
+        this.shadowEnabled = shadowEnabled;
     }
 
     @Override
@@ -67,7 +78,15 @@ public class ImageDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
         if (imageView == null || bitmap == null)
             return;
 
-        if (bitmap.getWidth() < imageView.getWidth() || bitmap.getHeight() < imageView.getHeight()) {
+        if (shadowEnabled) {
+            LayerDrawable drawable = (LayerDrawable) ContextCompat.getDrawable(imageView.getContext(), R.drawable.shadows);
+            if (drawable != null) {
+                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                drawable.setDrawableByLayerId(R.id.cover_drawble, bitmapDrawable);
+                imageView.setImageDrawable(drawable);
+            }
+
+        } else if (bitmap.getWidth() < imageView.getWidth() || bitmap.getHeight() < imageView.getHeight()) {
             Matrix matrix = new Matrix();
             matrix.postScale((float) imageView.getWidth() / (float) bitmap.getWidth(),
                     (float) imageView.getHeight() / (float) bitmap.getHeight());

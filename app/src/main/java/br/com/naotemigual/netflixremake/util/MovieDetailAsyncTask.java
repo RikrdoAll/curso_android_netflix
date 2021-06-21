@@ -16,12 +16,9 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import br.com.naotemigual.netflixremake.model.Category;
 import br.com.naotemigual.netflixremake.model.Movie;
 import br.com.naotemigual.netflixremake.model.MovieDetail;
 

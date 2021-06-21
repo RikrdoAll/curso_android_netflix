@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
 
     }
 
-    private class MovieAdapater extends RecyclerView.Adapter<MovieHolder>  implements OnItemClickListner{
+    private class MovieAdapater extends RecyclerView.Adapter<MovieHolder> implements OnItemClickListner {
 
         private final List<Movie> movies;
 
@@ -121,9 +121,14 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
 
         @Override
         public void onClick(int position) {
-            Intent intent = new Intent(MainActivity.this, MovieActivity.class);
-            intent.putExtra("id", movies.get(position).getId());
-            startActivity(intent);
+            if (movies.get(position).getId() < 4) {
+                Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+                intent.putExtra("id", movies.get(position).getId());
+                startActivity(intent);
+            } else {
+
+            }
+
         }
 
         @NonNull
