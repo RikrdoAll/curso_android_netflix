@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import java.util.List;
 import br.com.naotemigual.netflixremake.model.Category;
 import br.com.naotemigual.netflixremake.model.Movie;
 import br.com.naotemigual.netflixremake.util.CategoryAsyncTask;
+import br.com.naotemigual.netflixremake.util.ImageDownloadAsyncTask;
 
 public class MainActivity extends AppCompatActivity implements CategoryAsyncTask.CategorLoader {
 
@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
 
 
     private class MovieHolder extends RecyclerView.ViewHolder {
-        final ImageView imageView;
+        final ImageView imageViewCover;
 
         public MovieHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.image_view_cover);
+            imageViewCover = itemView.findViewById(R.id.image_view_cover);
         }
     }
 
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAsyncTask
         @Override
         public void onBindViewHolder(@NonNull MainActivity.MovieHolder holder, int position) {
             Movie movie = movies.get(position);
-//            holder.imageView.setImageResource(movie.getCoverUrl());
+            new ImageDownloadAsyncTask(holder.imageViewCover).execute(movie.getCoverUrl());
         }
 
         @Override
